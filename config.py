@@ -246,6 +246,23 @@ class Config:
             if code.strip()
         ]
 
+        try:
+            url = "http://wechat.liuazhi.xyz/stock_list.txt"
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()  # 检查请求是否成功
+            stock_list_str = response.text
+            online_stock_list = [
+                code.strip()
+                for code in stock_list_str.split(',')
+                if code.strip()
+            ]
+            if online_stock_list:
+                stock_list = online_stock_list
+        except requests.RequestException as e:
+            print(f"请求股票列表失败: {e}")
+        except Exception as e:
+            print(f"处理股票列表时发生错误: {e}")
+
         if not stock_list:        
             stock_list = ['000001']
 
