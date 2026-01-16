@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 import pandas as pd
 import tushare as ts
+import requests
 
 warnings.filterwarnings("ignore")
 
@@ -82,7 +83,21 @@ def get_stock_name_by_code(code: str) -> Optional[str]:
 
 
 if __name__ == "__main__":
-    stock_name = get_stock_name_by_code("000018")
-    print(stock_name)
-    stock_name = get_stock_name_by_code("000019")
-    print(stock_name)
+    # stock_list = ["000887", "600373", "600648", "002163"]
+    # for code in stock_list:
+    #     stock_name = get_stock_name_by_code(code)
+    #     print(f"股票代码: {code}, 股票名称: {stock_name}")
+    url = "http://wechat.liuazhi.xyz/stock_list.txt"
+    response = requests.get(url)
+    response.raise_for_status()  # 检查请求是否成功
+    stock_list_str = response.text
+    stock_list = [
+        code.strip()
+        for code in stock_list_str.split(',')
+        if code.strip()
+    ]
+    print(f"从远程获取到 {len(stock_list)} 只股票")
+    for code in stock_list:
+        stock_name = get_stock_name_by_code(code)
+        print(f"股票代码: {code}, 股票名称: {stock_name}")
+
