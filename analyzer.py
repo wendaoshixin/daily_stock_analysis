@@ -25,28 +25,9 @@ from tenacity import (
 )
 
 from config import get_config
+from louis.fetch_stock_name_by_code import get_stock_name_by_code
 
 logger = logging.getLogger(__name__)
-
-
-# 股票名称映射（常见股票）
-STOCK_NAME_MAP = {
-    '600519': '贵州茅台',
-    '000001': '平安银行',
-    '300750': '宁德时代',
-    '002594': '比亚迪',
-    '600036': '招商银行',
-    '601318': '中国平安',
-    '000858': '五粮液',
-    '600276': '恒瑞医药',
-    '601012': '隆基绿能',
-    '002475': '立讯精密',
-    '300059': '东方财富',
-    '002415': '海康威视',
-    '600900': '长江电力',
-    '601166': '兴业银行',
-    '600028': '中国石化',
-}
 
 
 @dataclass
@@ -728,7 +709,8 @@ class GeminiAnalyzer:
                 name = context['realtime']['name']
             else:
                 # 最后从映射表获取
-                name = STOCK_NAME_MAP.get(code, f'股票{code}')
+                name = get_stock_name_by_code(code)
+                # name = STOCK_NAME_MAP.get(code, f'股票{code}')
         
         # 如果模型不可用，返回默认结果
         if not self.is_available():
@@ -832,7 +814,8 @@ class GeminiAnalyzer:
         # 优先使用上下文中的股票名称（从 realtime_quote 获取）
         stock_name = context.get('stock_name', name)
         if not stock_name or stock_name == f'股票{code}':
-            stock_name = STOCK_NAME_MAP.get(code, f'股票{code}')
+            stock_name = get_stock_name_by_code(code)
+            # stock_name = STOCK_NAME_MAP.get(code, f'股票{code}')
             
         today = context.get('today', {})
         
