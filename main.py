@@ -45,11 +45,12 @@ from config import get_config, Config
 from storage import get_db, DatabaseManager
 from data_provider import DataFetcherManager
 from data_provider.akshare_fetcher import AkshareFetcher, RealtimeQuote, ChipDistribution
-from analyzer import GeminiAnalyzer, AnalysisResult, STOCK_NAME_MAP
+from analyzer import GeminiAnalyzer, AnalysisResult
 from notification import NotificationService, NotificationChannel, send_daily_report
 from search_service import SearchService, SearchResponse
 from stock_analyzer import StockTrendAnalyzer, TrendAnalysisResult
 from market_analyzer import MarketAnalyzer
+from louis.fetch_stock_name_by_code import get_stock_name_by_code
 
 # 配置日志格式
 LOG_FORMAT = '%(asctime)s | %(levelname)-8s | %(name)-20s | %(message)s'
@@ -233,7 +234,8 @@ class StockAnalysisPipeline:
         """
         try:
             # 获取股票名称（优先从实时行情获取真实名称）
-            stock_name = STOCK_NAME_MAP.get(code, '')
+            # stock_name = STOCK_NAME_MAP.get(code, '')
+            stock_name = get_stock_name_by_code(code)
             
             # Step 1: 获取实时行情（量比、换手率等）
             realtime_quote: Optional[RealtimeQuote] = None
